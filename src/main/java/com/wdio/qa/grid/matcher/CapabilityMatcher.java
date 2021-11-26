@@ -1,48 +1,52 @@
 package com.wdio.qa.grid.matcher;
 
-import org.openqa.grid.internal.utils.DefaultCapabilityMatcher;
-
 import java.util.Map;
 import java.util.Objects;
+import org.openqa.grid.internal.utils.DefaultCapabilityMatcher;
 
 public class CapabilityMatcher extends DefaultCapabilityMatcher {
 
-    @Override
-    public boolean matches(Map<String, Object> nodeCapability, Map<String, Object> requestedCapability) {
-        final String deviceName = "deviceName";
-        final String deviceNameAppium = "appium:" + deviceName;
-        final String browserName = "browserName";
+  final String DEVICE_NAME = "deviceName";
+  final String APPIUM_DEVICE_NAME = "appium:deviceName";
+  final String UDID = "udid";
+  final String APPIUM_UDID = "appium:udid";
 
-        // If the request does not have the special capability,
-        // we return what the DefaultCapabilityMatcher returns
-        boolean result;
-        if (requestedCapability.containsKey(deviceName)) {
-            result = matcher(nodeCapability, requestedCapability, deviceName, deviceName);
-        } else if (requestedCapability.containsKey(deviceNameAppium)) {
-            result = matcher(nodeCapability, requestedCapability, deviceName, deviceNameAppium);
-        } else if (requestedCapability.containsKey(browserName)) {
-            result = matcher(nodeCapability, requestedCapability, browserName, browserName);
-        } else {
-            System.out.println("Basic matcher");
-            result = super.matches(nodeCapability, requestedCapability);
-        }
+  @Override
+  public boolean matches(Map<String, Object> nodeCapability,
+      Map<String, Object> requestedCapability) {
+    System.out.println("Node capabilities:\n" + nodeCapability);
+    System.out.println("Requested capabilities:\n" + requestedCapability + "\n===");
 
-        if (result) {
-            System.out.println("Node capabilities:\n" + nodeCapability + "\n===");
-        }
+    // If the request does not have the special capability,
+    // we return what the DefaultCapabilityMatcher returns
+    if (requestedCapability.containsKey(APPIUM_UDID)) {
+      return matcher(nodeCapability, requestedCapability, UDID, APPIUM_UDID);
+    } else if (requestedCapability.containsKey(UDID)) {
+      return matcher(nodeCapability, requestedCapability, UDID, UDID);
+    } else if (requestedCapability.containsKey(APPIUM_DEVICE_NAME)) {
+      return matcher(nodeCapability, requestedCapability, DEVICE_NAME, APPIUM_DEVICE_NAME);
+    } else if (requestedCapability.containsKey(DEVICE_NAME)) {
+      return matcher(nodeCapability, requestedCapability, DEVICE_NAME, DEVICE_NAME);
+    } else {
+      System.out.println("Basic matcher");
+      return super.matches(nodeCapability, requestedCapability);
+    }
+  }
 
-        return result;
+  private boolean matcher(Map<String, Object> nodeCapability,
+      Map<String, Object> requestedCapability, String nCap, String rCap) {
+    if (!nodeCapability.containsKey(nCap)) {
+      return false;
     }
 
-    private boolean matcher(Map<String, Object> nodeCapability, Map<String, Object> requestedCapability, String nCap, String rCap) {
-        if (!nodeCapability.containsKey(nCap)) return false;
+    String expected = (String) requestedCapability.get(rCap);
+    String actual = (String) nodeCapability.get(nCap);
 
-        String expected = (String) requestedCapability.get(rCap);
-        String actual = (String) nodeCapability.get(nCap);
+    boolean result = Objects.equals(expected, actual);
+    System.out.println(String
+        .format("Is %s matching (A==E): '%s'=='%s'. Result: %s", nCap, actual, expected,
+            result));
 
-        boolean result = Objects.equals(expected, actual);
-        System.out.println(String.format("Is %s matching (A==E): '%s'=='%s'. Result: %s", nCap, actual, expected, result));
-
-        return result;
-    }
+    return result;
+  }
 }

@@ -12,7 +12,12 @@ node_modules/
 .vscode
 .idea
 *.iml
+.settings/
 
 # artifacts
 target/
 *.jar
+
+# Java
+.classpath
+.project
