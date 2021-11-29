@@ -15,17 +15,17 @@ public class CapabilityMatcher extends DefaultCapabilityMatcher {
   public boolean matches(Map<String, Object> nodeCapability,
       Map<String, Object> requestedCapability) {
     System.out.println("Node capabilities:\n" + nodeCapability);
-    System.out.println("Requested capabilities:\n" + requestedCapability + "\n===");
+    System.out.println("Requested capabilities:\n" + requestedCapability);
 
     // If the request does not have the special capability,
     // we return what the DefaultCapabilityMatcher returns
-    if (requestedCapability.containsKey(APPIUM_UDID)) {
+    if (nodeCapability.containsKey(UDID) && requestedCapability.containsKey(APPIUM_UDID)) {
       return matcher(nodeCapability, requestedCapability, UDID, APPIUM_UDID);
-    } else if (requestedCapability.containsKey(UDID)) {
+    } else if (nodeCapability.containsKey(UDID) && requestedCapability.containsKey(UDID)) {
       return matcher(nodeCapability, requestedCapability, UDID, UDID);
-    } else if (requestedCapability.containsKey(APPIUM_DEVICE_NAME)) {
+    } else if (nodeCapability.containsKey(DEVICE_NAME) && requestedCapability.containsKey(APPIUM_DEVICE_NAME)) {
       return matcher(nodeCapability, requestedCapability, DEVICE_NAME, APPIUM_DEVICE_NAME);
-    } else if (requestedCapability.containsKey(DEVICE_NAME)) {
+    } else if (nodeCapability.containsKey(DEVICE_NAME) && requestedCapability.containsKey(DEVICE_NAME)) {
       return matcher(nodeCapability, requestedCapability, DEVICE_NAME, DEVICE_NAME);
     } else {
       System.out.println("Basic matcher");
